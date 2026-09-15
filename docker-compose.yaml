@@ -1,0 +1,74 @@
+services:
+  database:
+    container_name: heart-db
+    build: ./database
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: "1"
+      MYSQL_DATABASE: heart
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 20s
+
+  rabbitmq:
+    container_name: heart-rabbitmq
+    image: rabbitmq:3.13-management-alpine
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 20s
+
+  worker:
+    container_name: heart-worker
+    build:
+      context: .
+      dockerfile: worker/Dockerfile
+    environment:
+      MYSQL_HOST: database
+      MYSQL_DATABASE: heart
+      MYSQL_USER: root
+      MYSQL_PASSWORD: ""
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672
+      QUEUE_NAME: predictions
+    depends_on:
+      database:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+
+  backend:
+    container_name: heart-backend
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    expose:
+      - 3000
+    environment:
+      PORT: 3000
+      MYSQL_HOST: database
+      MYSQL_DATABASE: heart
+      MYSQL_USER: root
+      MYSQL_PASSWORD: ""
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672
+      QUEUE_NAME: predictions
+    depends_on:
+      database:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      worker:
+        condition: service_started
+
+  frontend:
+    container_name: heart-frontend
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    ports:
+      - "3005:80"
+    depends_on:
+      - backend

@@ -1,0 +1,21 @@
+{
+  "name": "heart-attack-backend",
+  "version": "1.0.0",
+  "private": true,
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "amqplib": "^0.10.9",
+    "express": "^5.1.0",
+    "mysql2": "^3.15.3"
+  },
+  "devDependencies": {
+    "@types/amqplib": "^0.10.5",
+    "@types/express": "^5.0.0",
+    "@types/node": "^20.14.9",
+    "typescript": "^5.5.3"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "age": 54,
+  "sex": 1,
+  "cp": 3,
+  "trestbps": 140,
+  "chol": 239,
+  "fbs": 0,
+  "restecg": 1,
+  "thalach": 160,
+  "exang": 0,
+  "oldpeak": 1.2
+}

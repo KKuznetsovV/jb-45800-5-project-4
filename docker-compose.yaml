@@ -24,6 +24,7 @@ services:
 
   worker:
     container_name: heart-worker
+    platform: linux/amd64
     build:
       context: .
       dockerfile: worker/Dockerfile
